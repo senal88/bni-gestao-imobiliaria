@@ -15,6 +15,7 @@ Sistema completo de gestão do portfólio imobiliário BNI: 38 propriedades inte
 - [Configuração](#configuração)
 - [Uso](#uso)
 - [Estrutura do Projeto](#estrutura-do-projeto)
+- [Templates](#templates)
 - [Documentação](#documentação)
 - [Contribuindo](#contribuindo)
 - [Licença](#licença)
@@ -249,8 +250,15 @@ bni-gestao-imobiliaria/
 │   ├── validate_schemas.py          # Validação de schemas
 │   ├── generate_ifrs_reports.py     # Relatórios IFRS
 │   └── export_to_obsidian.py        # Exportação Obsidian
+├── templates/                       # Templates e exemplos
+│   ├── README_TEMPLATES.md         # Documentação de templates
+│   ├── imob_schema.sql             # Schema SQL de referência
+│   ├── etl.py                      # Script ETL para processar PDFs
+│   ├── exemplos_reais_propriedades.json  # Exemplos reais do CSV
+│   └── Exemplo_Para_Desenvolvimento_Template/  # Templates de desenvolvimento
 ├── tests/                           # Testes automatizados
 ├── .env.example                     # Exemplo de variáveis de ambiente
+├── .cursorrules                     # Regras do Cursor AI
 ├── .gitignore                       # Arquivos ignorados pelo Git
 ├── docker-compose.yml               # Configuração Docker
 ├── Makefile                         # Comandos simplificados
@@ -314,6 +322,26 @@ Documentos de decisões arquiteturais importantes estão em `docs/ADR/`:
 ### Schemas de Dados
 
 Os schemas de validação estão em `data/schemas/` e são utilizados para garantir a integridade dos dados antes da sincronização.
+
+### Templates e Exemplos
+
+- [`README_TEMPLATES.md`](templates/README_TEMPLATES.md) - 📋 **Documentação completa dos templates**
+  - Todos os templates foram oficializados com dados reais
+  - Exemplos baseados em propriedades reais do CSV
+  - Guia de uso e manutenção
+
+**⚠️ IMPORTANTE:** Todos os templates usam dados reais do arquivo `data/raw/propriedades.csv`. Não há mais dados fictícios que possam causar confusão.
+
+**Arquivos principais:**
+- `templates/imob_schema.sql` - Schema SQL de referência para gestão imobiliária
+- `templates/etl.py` - Script ETL para processar relatórios PDF em JSON normalizado
+- `templates/exemplos_reais_propriedades.json` - 10 propriedades reais extraídas do CSV
+- `templates/imoveis_staging.jsonl` - Dados de staging em formato JSON Lines
+
+**Dados oficiais:**
+- Fonte: `data/raw/propriedades.csv` (38 propriedades reais)
+- Código de família: `BNI_GESTAO_IMOBILIARIA`
+- Nome da família: `BNI Gestão Imobiliária`
 
 ## 🧪 Testes
 

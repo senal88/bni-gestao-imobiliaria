@@ -1,0 +1,90 @@
+# Cursor Rules - BNI Gestão Imobiliária
+
+## 📋 Regras Gerais
+
+- Sempre use dados reais do arquivo `data/raw/propriedades.csv` em exemplos
+- Nunca use dados fictícios como "FAMILIA_SILVA", "Ed. Mariner", "Balneário Camboriú"
+- Código de família oficial: `BNI_GESTAO_IMOBILIARIA`
+- Nome da família oficial: `BNI Gestão Imobiliária`
+
+## 🏗️ Arquitetura e Estrutura
+
+- Schema PostgreSQL está em `scripts/init.sql` (fonte oficial)
+- Script `init_database.py` executa `init.sql` completo - nunca criar schema manualmente
+- Todos os scripts devem usar variáveis de ambiente do arquivo `.env`
+- Use `load_secrets_1p.sh` para carregar secrets do 1Password automaticamente
+
+## 📊 Dados e Templates
+
+### Dados Oficiais
+
+- **Fonte única de verdade**: `data/raw/propriedades.csv`
+- **Total de propriedades**: 38 imóveis reais
+- **Exemplos reais**: Use `templates/exemplos_reais_propriedades.json` para referência
+
+### Templates
+
+- **Localização**: `templates/`
+- **Documentação**: `templates/README_TEMPLATES.md`
+- **Schema SQL**: `templates/imob_schema.sql` (usar apenas como referência)
+- **ETL**: `templates/etl.py` (processa PDFs para JSON normalizado)
+
+### Regras para Templates
+
+1. **SEMPRE** use dados reais do CSV em exemplos
+2. **NUNCA** use dados fictícios como:
+   - ❌ "FAMILIA_SILVA" → ✅ "BNI_GESTAO_IMOBILIARIA"
+   - ❌ "Ed. Mariner" → ✅ "APTO 802 EDF.EMILIO BUMACHAR"
+   - ❌ "Balneário Camboriú" → ✅ "Vila Velha" (ou outras cidades reais)
+3. **SEMPRE** referencie `data/raw/propriedades.csv` como fonte oficial
+4. **VERIFIQUE** se exemplos estão atualizados antes de usar
+
+## 🐳 Docker e VPS
+
+- Use `docker-compose.prod.yml` para produção na VPS
+- Use `docker-compose.yml` para desenvolvimento local
+- Execute `scripts/auditoria_docker_completa.sh` antes de deploy na VPS
+- Verifique conflitos de portas e containers existentes
+
+## 🔐 Segurança e Secrets
+
+- Use 1Password para gerenciar secrets
+- Cofre macOS: `1p_macos`
+- Cofre VPS: `1p_vps`
+- GH_TOKEN está oficializado em ambos os cofres
+- Use `load_secrets_1p.sh` para carregar secrets automaticamente
+
+## 🔄 Git e Branches
+
+- Branch padrão: `main` (não usar `teab` ou outras)
+- Todos os workflows GitHub Actions devem usar `main`
+- Use scripts enterprise para gerenciar branches em escala
+
+## 📝 Documentação
+
+- ADRs estão em `docs/ADR/`
+- Guias de setup estão em `docs/SETUP_*.md`
+- Documentação de templates está em `templates/README_TEMPLATES.md`
+- Sempre atualize documentação quando fizer mudanças
+
+## 🧪 Testes e Validação
+
+- Execute `make validate-schemas` antes de commit
+- Use `make test` para executar testes
+- Valide schemas CSV antes de importar dados
+
+## 🚀 Deploy
+
+- Deploy automático via GitHub Actions
+- Workflow: `.github/workflows/deploy-postgres.yml`
+- Executa auditoria Docker antes de deploy
+- Usa `init_database.py` que executa `init.sql` completo
+
+## ⚠️ Avisos Importantes
+
+- **NÃO** crie schemas manualmente - sempre use `init.sql`
+- **NÃO** use dados fictícios em templates ou exemplos
+- **SEMPRE** verifique conflitos Docker antes de criar containers
+- **SEMPRE** use dados reais do CSV em documentação e exemplos
+- **NUNCA** commite arquivos `.env` ou secrets
+
