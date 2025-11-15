@@ -101,6 +101,8 @@ def load_properties_from_csv():
     if data_file.exists():
         try:
             df = pd.read_csv(data_file)
+            # Replace NaN with empty string for optional fields
+            df = df.fillna({'inquilino': '', 'renda_mensal': 0.0})
             properties_data = [Property(**row) for _, row in df.iterrows()]
             logger.info(f"Loaded {len(properties_data)} properties from CSV")
         except Exception as e:
