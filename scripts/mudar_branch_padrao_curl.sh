@@ -39,9 +39,9 @@ else
         -H "Accept: application/vnd.github.v3+json" \
         -d '{"default_branch":"main"}' \
         "https://api.github.com/repos/$REPO")
-    
+
     HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
-    
+
     if [ "$HTTP_CODE" = "200" ]; then
         echo "✅ Branch padrão alterada para 'main'"
         sleep 2

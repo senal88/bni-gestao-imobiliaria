@@ -1,0 +1,36 @@
+# GitHub Actions Workflow para enforcement de default branch = main
+# Este workflow garante que apenas 'main' seja usado como branch padrão
+
+name: Enforce Default Branch
+
+on:
+  repository_dispatch:
+    types: [check-default-branch]
+  workflow_dispatch:
+  schedule:
+    # Verifica diariamente às 3h UTC
+    - cron: '0 3 * * *'
+
+jobs:
+  check-default-branch:
+    name: Verificar Default Branch
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Verificar Default Branch
+        run: |
+          DEFAULT_BRANCH=$(gh api repos/${{ github.repository }} --jq .default_branch)
+          
+          if [ "$DEFAULT_BRANCH" != "main" ]; then
+            echo "⚠️  Default branch é '$DEFAULT_BRANCH', deveria ser 'main'"
+            echo "::warning::Default branch deve ser 'main'"
+            exit 1
+          else
+            echo "✅ Default branch está correto: 'main'"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

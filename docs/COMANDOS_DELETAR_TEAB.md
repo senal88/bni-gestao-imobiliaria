@@ -102,7 +102,7 @@ git branch -r
 
 ### Erro: "GitHub CLI não encontrado"
 
-**Solução**: 
+**Solução**:
 ```bash
 brew install gh
 gh auth login

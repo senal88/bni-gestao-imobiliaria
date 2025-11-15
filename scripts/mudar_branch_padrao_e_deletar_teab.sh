@@ -37,10 +37,10 @@ if [ "$CURRENT_DEFAULT" = "main" ]; then
 else
     echo "🔄 Mudando branch padrão de '$CURRENT_DEFAULT' para 'main'..."
     gh api repos/$REPO --method PATCH -f default_branch=main
-    
+
     # Aguardar propagação
     sleep 2
-    
+
     # Verificar
     NEW_DEFAULT=$(gh api repos/$REPO --jq .default_branch)
     if [ "$NEW_DEFAULT" = "main" ]; then

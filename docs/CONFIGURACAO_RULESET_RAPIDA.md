@@ -8,7 +8,7 @@
 
 2. **Enforcement status**: ✅ **Active**
 
-3. **Target branches**: 
+3. **Target branches**:
    - Selecione: **Branch name pattern**
    - Digite: `main`
 
@@ -25,7 +25,7 @@
 
    ✅ **Restrict deletions**
 
-5. **Bypass list**: 
+5. **Bypass list**:
    - Deixar vazio (ou adicionar `senal88` se quiser bypass para você)
 
 6. **Criar Ruleset**

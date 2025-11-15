@@ -74,7 +74,7 @@ Para começar, configure pelo menos:
 
 1. ✅ **Require a pull request before merging**
    - Require approvals: 1
-   
+
 2. ✅ **Require status checks to pass**
    - Adicionar: `validate-schemas`
 
@@ -116,10 +116,10 @@ Proteção Branch Main - BNI Gestão Imobiliária
 - ✅ **Require a pull request before merging**
   - Require approvals: **1**
   - Dismiss stale approvals: ✅
-  
+
 - ✅ **Require status checks to pass**
   - Status checks: `validate-schemas`
-  
+
 - ✅ **Block force pushes**
 
 - ✅ **Restrict deletions**
