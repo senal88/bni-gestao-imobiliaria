@@ -64,10 +64,27 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key -p $SSH_PORT $SSH_USER@$SSH_HOST << 'EOF'
             cd /opt/bni-gestao-imobiliaria || exit 1
+            
+            # Executar auditoria Docker antes do deploy
+            echo "🔍 Executando auditoria Docker..."
+            if [ -f scripts/auditoria_docker_completa.sh ]; then
+              chmod +x scripts/auditoria_docker_completa.sh
+              ./scripts/auditoria_docker_completa.sh || echo "⚠️  Auditoria falhou, continuando deploy..."
+            fi
+            
+            # Atualizar código
+            echo "📥 Atualizando código..."
             git pull origin main
+            
+            # Instalar dependências
+            echo "📦 Instalando dependências..."
             python3 -m pip install -r requirements.txt --quiet
+            
+            # Inicializar banco (agora usa init.sql completo)
+            echo "🗄️  Inicializando banco de dados..."
             python3 scripts/init_database.py
-            echo "Deploy concluído com sucesso!"
+            
+            echo "✅ Deploy concluído com sucesso!"
           EOF
 
       - name: Cleanup SSH
