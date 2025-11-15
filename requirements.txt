@@ -1,0 +1,63 @@
+# ============================================
+# BNI Gestão Imobiliária - Dependências
+# ============================================
+
+# Core
+python-dotenv>=1.0.0
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# Database
+psycopg2-binary>=2.9.9
+sqlalchemy>=2.0.23
+alembic>=1.13.0
+
+# Hugging Face
+huggingface-hub>=0.20.0
+datasets>=2.16.0
+
+# Data Processing
+pandas>=2.1.4
+numpy>=1.26.3
+openpyxl>=3.1.2
+
+# API (opcional, se usar FastAPI/Flask)
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.5.0
+
+# Validation
+jsonschema>=4.20.0
+cerberus>=1.3.5
+
+# Reports
+reportlab>=4.0.7
+xlsxwriter>=3.1.9
+
+# Utilities
+pyyaml>=6.0.1
+python-dateutil>=2.8.2
+pytz>=2024.1
+
+# Testing
+pytest>=7.4.4
+pytest-cov>=4.1.0
+pytest-asyncio>=0.23.3
+
+# Code Quality
+black>=23.12.1
+flake8>=7.0.0
+mypy>=1.8.0
+ruff>=0.1.11
+
+# Documentation
+sphinx>=7.2.6
+sphinx-rtd-theme>=2.0.0
+
+# SSH/Deployment
+paramiko>=3.4.0
+fabric>=3.2.2
+
+# Logging
+loguru>=0.7.2
+

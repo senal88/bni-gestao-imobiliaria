@@ -1,0 +1,88 @@
+name: Deploy to PostgreSQL VPS
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - teab
+    paths:
+      - 'scripts/**'
+      - 'data/schemas/**'
+      - '.github/workflows/deploy-postgres.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to PostgreSQL
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          # Adiciona host ao known_hosts (aceita novo host automaticamente)
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+          # Configura StrictHostKeyChecking para aceitar automaticamente
+          echo -e "Host ${{ secrets.SSH_HOST }}\n  StrictHostKeyChecking accept-new\n  UserKnownHostsFile ~/.ssh/known_hosts" >> ~/.ssh/config
+
+      - name: Validate database connection
+        env:
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: |
+          python scripts/init_database.py --validate-only
+
+      - name: Deploy to VPS
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: |
+          ssh -i ~/.ssh/deploy_key -p $SSH_PORT $SSH_USER@$SSH_HOST << 'EOF'
+            cd /opt/bni-gestao-imobiliaria || exit 1
+            git pull origin teab
+            python3 -m pip install -r requirements.txt --quiet
+            python3 scripts/init_database.py
+            echo "Deploy concluído com sucesso!"
+          EOF
+
+      - name: Cleanup SSH
+        if: always()
+        run: |
+          rm -f ~/.ssh/deploy_key
+
+      - name: Notify deployment status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Deploy concluído com sucesso!"
+          else
+            echo "❌ Deploy falhou!"
+            exit 1
+          fi
+

@@ -1,0 +1,40 @@
+ID,CODIGO_CC,NOME_IMOVEL,TIPO_ESTOQUE,VALOR_31_12_2023_R$,VALOR_31_12_2024_R$,STATUS_ATUAL,PRECO_TOTAL_PROMESSA_R$,DATA_HABITE_SE_PREVISTA,OBSERVACOES_FINANCEIRAS
+1,51001,APTO 802 EDF.EMILIO BUMACHAR,Concluídos,44886.16,44886.16,Concluído,N/A,N/A,Estoque de imóveis concluídos
+2,51002,APTO 902 EDF.EMILIO BUMACHAR,Concluídos,56226.27,56226.27,Concluído,N/A,N/A,Estoque de imóveis concluídos
+3,51003,APTO 1401 EDF.EMILIO BUMACHAR,Concluídos,97338.01,97338.01,Concluído,N/A,N/A,Estoque de imóveis concluídos
+4,51004,APTO 1402 EDF.EMILIO BUMACHAR,Concluídos,81608.55,81608.55,Locado,N/A,N/A,Gerou R$ 9.500,00 de aluguel em Jan/2025
+5,51005,APTO 1801 EDF.EMILIO BUMACHAR,Concluídos,107507.39,107507.39,Locado,N/A,N/A,Locado (Samira de Oliveira Pavesi)
+6,51006,APTO 1002 EDF.EMILIO BUMACHAR,Concluídos,N/A,N/A,Concluído,N/A,N/A,Sem valor contábil explícito nas fontes
+7,51007,TERRENO 07 QD 26 ENSEADA AZUL,Concluídos,23595.06,23595.06,Concluído,N/A,N/A,Estoque de imóveis concluídos
+8,51008,TERRENO 2.250M² C.ITAPEMIRIM,Concluídos,9000.00,9000.00,Concluído,N/A,N/A,Estoque de imóveis concluídos
+9,51009,APTO 134 EDF.PENSYLVANIA SJC,Concluídos,375428.68,375428.68,Concluído,N/A,N/A,Gera aluguel (R$ 5.661,22 em Out/2024)
+10,51010,LT.5-6-7 QD.6A PRAIA DA COSTA (DROGASIL),Concluídos,176269.08,176269.08,Locado,N/A,N/A,Locação de longo prazo (10 anos) — aluguel avaliado em R$ 37.500/mês
+11,51011,LT.10-12 QD.7 PRAIA DA COSTA,Concluídos,205415.91,205415.91,Concluído,N/A,N/A,Estoque de imóveis concluídos
+12,51012,SALAO TERREO ED.PRAIA,Concluídos,49451.63,49451.63,Concluído,N/A,N/A,Estoque de imóveis concluídos
+13,51013,LT.11 QD.3W ALPHAVILLE JACUHY,Concluídos,53227.43,53227.43,Concluído,N/A,N/A,Estoque de imóveis concluídos
+14,51014,LT.12 QD 3W ALPHAVILLE JACUHY,Concluídos,55213.22,55213.22,Concluído,N/A,N/A,Estoque de imóveis concluídos
+15,51015,LT.10 QD 3W ALPHAVILLE JACUHY,Concluídos,300000.00,300000.00,Concluído,N/A,N/A,Estoque de imóveis concluídos
+16,51016,TERRENO GUARAPARI,Concluídos,200000.00,200000.00,Concluído,N/A,N/A,Estoque de imóveis concluídos
+17,51020,APTO 1002 EDF VILLA LOBOS,Concluídos,192186.62,192186.62,Concluído,N/A,N/A,Estoque de imóveis concluídos
+18,51017,APTO 701 TORRE A - PALAZZI BACUTIA,De Terceiros,2390000.00,2390000.00,Concluído,N/A,N/A,Maior ativo de Terceiros
+19,51018,APTO 1102 EDIFICIO A7 VIX,De Terceiros,533403.00,533403.00,Concluído,N/A,N/A,Estoque de Imóveis de Terceiros
+20,51019,APTO 1006 EDIFICIO A7 VIX,De Terceiros,342090.00,342090.00,Concluído,N/A,N/A,Estoque de Imóveis de Terceiros
+21,51030,LOTE 11 QD 3W ALPHAVILLE JACUHY,De Terceiros,237737.22,237737.22,Concluído,N/A,N/A,Integralizado ao capital — Matrícula 59.450
+22,51040,LOTE 12 QD 3W ALPHAVILLE JACUHY,De Terceiros,261844.26,261844.26,Concluído,N/A,N/A,Valor pode chegar a R$ 500.000 em outras fontes
+23,51050,ALAMEDA 25 - UNID 507 (EMPAR MATA DA RESERVA),De Terceiros,532000.00,532000.00,Concluído,N/A,N/A,Estoque Terceiros
+24,51060,ALAMEDA 25 - UNID 602 (EMPAR MATA DA RESERVA),De Terceiros,775000.00,775000.00,Locado,N/A,N/A,Locado — contrato até 26/09/2027
+25,51070,ILHA TRINDADE - APTO 201,De Terceiros,5013335.00,5013335.00,Promessa_Compra_Venda,5013335.00,2025-06-30,Matrícula 205638 — Promitente Comprador
+26,51080,LOJA 14 SHOPPING THE POINT PLAZA,De Terceiros,320000.00,320000.00,Concluído/Locado,N/A,N/A,Locada em conjunto com lojas 01–03
+27,51090,LOJA 01 SHOPPING THE POINT PLAZA,De Terceiros,500000.00,500000.00,Locado,N/A,N/A,Contrato até 07/10/2027
+28,51100,LOJA 02 SHOPPING THE POINT PLAZA,De Terceiros,500000.00,500000.00,Locado,N/A,N/A,Parte do contrato unificado
+29,51110,LOJA 03 SHOPPING THE POINT PLAZA,De Terceiros,500000.00,500000.00,Locado,N/A,N/A,Parte do contrato unificado
+30,51021,ED. YOUNIVERSE APTO 1209,De Terceiros,658120.00,0.00,Vendido/Reclassificado,658120.00,N/A,Pagamentos parcelados em 2025
+31,51022,ED. YOUNIVERSE APTO 1210,De Terceiros,648830.00,0.00,Vendido/Reclassificado,648830.00,N/A,Pagamentos parcelados em 2025
+32,51023,ED. YOUNIVERSE APTO 1211,De Terceiros,660180.00,0.00,Vendido/Reclassificado,660180.00,N/A,Pagamentos parcelados em 2025
+33,51024,ED. YOUNIVERSE APTO 1309,De Terceiros,663050.00,0.00,Vendido/Reclassificado,663050.00,N/A,Pagamentos parcelados em 2025
+34,51025,ED. YOUNIVERSE APTO 1310,De Terceiros,653720.00,0.00,Vendido/Reclassificado,653720.00,N/A,Pagamentos parcelados em 2025
+35,51026,ED. YOUNIVERSE APTO 1311,De Terceiros,665500.00,0.00,Vendido/Reclassificado,665500.00,N/A,Pagamentos parcelados em 2025
+36,51027,RESERVA MATA DA PRAIA - CASA 7,N/D,N/A,N/A,Promessa_Compra_Venda,5795100.00,N/A,Imóvel de alto valor — sem valor contábil registrado
+37,51120,LOJA 01-02-03 POINT PLAZA (AGRUPADOR),N/D,N/A,N/A,Locado,N/A,N/A,Centro de custo agrupador
+38,SCP PALAIS D'AZUR,UNID 291 TORRE 2 (Participação),N/D,N/A,1866750.00,Aporte SCP,N/A,N/A,Aporte refletido em Participações Societárias
+

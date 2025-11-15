@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Schema de Propriedades BNI - Dataset Real",
+  "description": "Schema de validação para dados reais de propriedades imobiliárias do portfólio BNI",
+  "type": "object",
+  "required": ["ID", "CODIGO_CC", "NOME_IMOVEL"],
+  "properties": {
+    "ID": {
+      "type": "integer",
+      "description": "Identificador único sequencial da propriedade",
+      "minimum": 1
+    },
+    "CODIGO_CC": {
+      "type": "string",
+      "description": "Código do centro de custo da propriedade",
+      "pattern": "^[0-9]{5}$|^SCP.*$"
+    },
+    "NOME_IMOVEL": {
+      "type": "string",
+      "description": "Nome completo do imóvel",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "TIPO_ESTOQUE": {
+      "type": "string",
+      "description": "Tipo de estoque da propriedade",
+      "enum": ["Concluídos", "De Terceiros", "N/D"]
+    },
+    "VALOR_31_12_2023_R$": {
+      "type": ["number", "null"],
+      "description": "Valor contábil em 31/12/2023 em R$",
+      "minimum": 0
+    },
+    "VALOR_31_12_2024_R$": {
+      "type": ["number", "null"],
+      "description": "Valor contábil em 31/12/2024 em R$",
+      "minimum": 0
+    },
+    "STATUS_ATUAL": {
+      "type": "string",
+      "description": "Status atual da propriedade",
+      "enum": [
+        "Concluído",
+        "Locado",
+        "Vendido/Reclassificado",
+        "Concluído/Locado",
+        "Promessa_Compra_Venda",
+        "Aporte SCP"
+      ]
+    },
+    "PRECO_TOTAL_PROMESSA_R$": {
+      "type": ["number", "string", "null"],
+      "description": "Preço total da promessa de compra e venda em R$",
+      "pattern": "^(N/A|[0-9]+(\\.[0-9]+)?)$"
+    },
+    "DATA_HABITE_SE_PREVISTA": {
+      "type": ["string", "null"],
+      "description": "Data prevista para habite-se",
+      "pattern": "^(N/A|\\d{4}-\\d{2}-\\d{2})$"
+    },
+    "OBSERVACOES_FINANCEIRAS": {
+      "type": "string",
+      "description": "Observações financeiras e informações adicionais sobre a propriedade"
+    }
+  }
+}

@@ -1,0 +1,111 @@
+# ============================================
+# docker-compose.prod.yml - BNI Gestão Imobiliária
+# Configuração para produção na VPS
+# ============================================
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    container_name: bni_postgres_prod
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-bni_gestao}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_INITDB_ARGS: --encoding=UTF8 --locale=pt_BR.UTF-8
+      TZ: America/Sao_Paulo
+    ports:
+      - "127.0.0.1:5432:5432"  # Apenas localhost para segurança
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-bni_gestao}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    # Limites de recursos
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    # Logging com rotação
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service,environment"
+    # Labels para organização
+    labels:
+      - "com.bni.service=postgres"
+      - "com.bni.environment=production"
+      - "com.bni.managed-by=docker-compose"
+    networks:
+      - bni_internal
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: bni_pgadmin_prod
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@bni.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      TZ: America/Sao_Paulo
+    ports:
+      - "127.0.0.1:5050:80"  # Apenas localhost
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost/misc/ping || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    # Limites de recursos
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    # Labels
+    labels:
+      - "com.bni.service=pgadmin"
+      - "com.bni.environment=production"
+      - "com.bni.managed-by=docker-compose"
+    networks:
+      - bni_internal
+
+# Rede isolada para comunicação interna entre serviços
+networks:
+  bni_internal:
+    driver: bridge
+    # internal: true  # Descomente para rede completamente isolada
+    # Nota: Se usar internal: true, você precisará de um proxy reverso para acesso externo
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
