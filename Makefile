@@ -1,4 +1,4 @@
-.PHONY: help init-db sync-hf validate-schemas generate-reports export-obsidian test lint format clean install docker-up docker-down
+.PHONY: help init-db sync-hf validate-schemas generate-reports export-obsidian test lint format clean install docker-up docker-down type-check load-secrets-1p setup all import-properties
 
 # Cores para output
 BLUE := \033[0;34m

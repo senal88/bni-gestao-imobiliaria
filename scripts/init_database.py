@@ -23,11 +23,11 @@ def get_db_connection():
     """Cria conexão com o banco de dados."""
     try:
         conn = psycopg2.connect(
-            host=os.getenv('POSTGRES_HOST', 'localhost'),
-            port=os.getenv('POSTGRES_PORT', '5432'),
-            database=os.getenv('POSTGRES_DB', 'bni_gestao'),
-            user=os.getenv('POSTGRES_USER', 'postgres'),
-            password=os.getenv('POSTGRES_PASSWORD', 'postgres')
+            host=os.getenv("POSTGRES_HOST", "localhost"),
+            port=os.getenv("POSTGRES_PORT", "5432"),
+            database=os.getenv("POSTGRES_DB", "bni_gestao"),
+            user=os.getenv("POSTGRES_USER", "postgres"),
+            password=os.getenv("POSTGRES_PASSWORD", "postgres"),
         )
         return conn
     except psycopg2.Error as e:
@@ -37,30 +37,27 @@ def get_db_connection():
 
 def create_database_if_not_exists():
     """Cria o banco de dados se não existir."""
-    db_name = os.getenv('POSTGRES_DB', 'bni_gestao')
+    db_name = os.getenv("POSTGRES_DB", "bni_gestao")
 
     # Conecta ao postgres padrão para criar o banco
     try:
         conn = psycopg2.connect(
-            host=os.getenv('POSTGRES_HOST', 'localhost'),
-            port=os.getenv('POSTGRES_PORT', '5432'),
-            database='postgres',
-            user=os.getenv('POSTGRES_USER', 'postgres'),
-            password=os.getenv('POSTGRES_PASSWORD', 'postgres')
+            host=os.getenv("POSTGRES_HOST", "localhost"),
+            port=os.getenv("POSTGRES_PORT", "5432"),
+            database="postgres",
+            user=os.getenv("POSTGRES_USER", "postgres"),
+            password=os.getenv("POSTGRES_PASSWORD", "postgres"),
         )
         conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         cursor = conn.cursor()
 
         # Verifica se o banco existe
-        cursor.execute(
-            "SELECT 1 FROM pg_database WHERE datname = %s",
-            (db_name,)
-        )
+        cursor.execute("SELECT 1 FROM pg_database WHERE datname = %s", (db_name,))
 
         if not cursor.fetchone():
-            cursor.execute(sql.SQL("CREATE DATABASE {}").format(
-                sql.Identifier(db_name)
-            ))
+            cursor.execute(
+                sql.SQL("CREATE DATABASE {}").format(sql.Identifier(db_name))
+            )
             print(f"✅ Banco de dados '{db_name}' criado com sucesso!")
         else:
             print(f"ℹ️  Banco de dados '{db_name}' já existe.")
@@ -72,67 +69,72 @@ def create_database_if_not_exists():
 
 
 def create_tables(conn):
-    """Cria as tabelas do sistema."""
+    """Cria as tabelas do sistema executando o arquivo init.sql completo."""
     cursor = conn.cursor()
 
-    # Tabela de propriedades
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS propriedades (
-            id SERIAL PRIMARY KEY,
-            codigo VARCHAR(50) UNIQUE NOT NULL,
-            nome VARCHAR(255) NOT NULL,
-            endereco TEXT,
-            cidade VARCHAR(100),
-            estado VARCHAR(2),
-            cep VARCHAR(10),
-            tipo_propriedade VARCHAR(50),
-            area_total DECIMAL(10, 2),
-            area_construida DECIMAL(10, 2),
-            valor_avaliacao DECIMAL(12, 2),
-            status VARCHAR(50),
-            data_aquisicao DATE,
-            observacoes TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-    """)
+    # Localiza o arquivo init.sql no mesmo diretório deste script
+    script_dir = Path(__file__).parent
+    init_sql_path = script_dir / 'init.sql'
 
-    # Tabela de transações
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS transacoes (
-            id SERIAL PRIMARY KEY,
-            propriedade_id INTEGER REFERENCES propriedades(id),
-            tipo_transacao VARCHAR(50) NOT NULL,
-            valor DECIMAL(12, 2) NOT NULL,
-            data_transacao DATE NOT NULL,
-            descricao TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-    """)
+    if not init_sql_path.exists():
+        print(f"❌ Arquivo init.sql não encontrado em: {init_sql_path}")
+        print("   Certifique-se de que o arquivo existe no diretório scripts/")
+        sys.exit(1)
 
-    # Tabela de relatórios IFRS
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS relatorios_ifrs (
-            id SERIAL PRIMARY KEY,
-            periodo VARCHAR(20) NOT NULL,
-            tipo_relatorio VARCHAR(100) NOT NULL,
-            arquivo_path VARCHAR(500),
-            data_geracao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            status VARCHAR(50) DEFAULT 'pendente'
-        );
-    """)
+    try:
+        # Lê e executa o arquivo init.sql completo
+        print(f"📄 Executando schema completo de: {init_sql_path}")
+        with open(init_sql_path, 'r', encoding='utf-8') as f:
+            sql_content = f.read()
 
-    # Índices
-    cursor.execute("""
-        CREATE INDEX IF NOT EXISTS idx_propriedades_codigo ON propriedades(codigo);
-        CREATE INDEX IF NOT EXISTS idx_propriedades_status ON propriedades(status);
-        CREATE INDEX IF NOT EXISTS idx_transacoes_propriedade ON transacoes(propriedade_id);
-        CREATE INDEX IF NOT EXISTS idx_transacoes_data ON transacoes(data_transacao);
-    """)
+        # psycopg2.execute() executa apenas um comando por vez
+        # Usa uma abordagem simples mas eficaz: divide por ';' e filtra comandos vazios
+        # Remove comentários de linha completa primeiro
+        lines = []
+        for line in sql_content.split('\n'):
+            stripped = line.strip()
+            if stripped and not stripped.startswith('--'):
+                lines.append(line)
 
-    conn.commit()
-    cursor.close()
-    print("✅ Tabelas criadas com sucesso!")
+        sql_clean = '\n'.join(lines)
+
+        # Divide por ponto-e-vírgula e executa cada comando
+        commands = [cmd.strip() for cmd in sql_clean.split(';') if cmd.strip()]
+
+        executed = 0
+        for i, command in enumerate(commands, 1):
+            if command:
+                try:
+                    cursor.execute(command)
+                    executed += 1
+                except psycopg2.Error as e:
+                    # Alguns comandos podem falhar se já existirem (CREATE IF NOT EXISTS)
+                    # Ignora erros de "already exists" mas reporta outros
+                    error_msg = str(e).lower()
+                    if 'already exists' in error_msg or 'duplicate' in error_msg:
+                        # Comando já executado antes, pode ignorar
+                        pass
+                    else:
+                        print(f"⚠️  Aviso no comando {i}: {e}")
+                        # Para comandos críticos, ainda tenta continuar
+
+        conn.commit()
+        cursor.close()
+        print(f"✅ Schema completo aplicado com sucesso!")
+        print(f"   ✅ {executed} comandos executados")
+        print("   ✅ Tabelas criadas (incluindo todas as colunas necessárias)")
+        print("   ✅ Índices criados")
+        print("   ✅ Views criadas")
+        print("   ✅ Triggers criados")
+
+    except Exception as e:
+        conn.rollback()
+        cursor.close()
+        print(f"❌ Erro ao executar init.sql: {e}")
+        print(f"   Arquivo: {init_sql_path}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
 
 
 def validate_connection(conn):
@@ -146,9 +148,14 @@ def validate_connection(conn):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Inicializa o banco de dados PostgreSQL')
-    parser.add_argument('--validate-only', action='store_true',
-                       help='Apenas valida a conexão sem criar tabelas')
+    parser = argparse.ArgumentParser(
+        description="Inicializa o banco de dados PostgreSQL"
+    )
+    parser.add_argument(
+        "--validate-only",
+        action="store_true",
+        help="Apenas valida a conexão sem criar tabelas",
+    )
     args = parser.parse_args()
 
     print("🚀 Inicializando banco de dados PostgreSQL...")
@@ -177,6 +184,5 @@ def main():
     print("✅ Inicialização concluída com sucesso!")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-

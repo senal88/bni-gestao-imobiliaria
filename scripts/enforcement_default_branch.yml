@@ -15,15 +15,15 @@ jobs:
   check-default-branch:
     name: Verificar Default Branch
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Verificar Default Branch
         run: |
           DEFAULT_BRANCH=$(gh api repos/${{ github.repository }} --jq .default_branch)
-          
+
           if [ "$DEFAULT_BRANCH" != "main" ]; then
             echo "⚠️  Default branch é '$DEFAULT_BRANCH', deveria ser 'main'"
             echo "::warning::Default branch deve ser 'main'"

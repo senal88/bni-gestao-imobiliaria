@@ -36,31 +36,31 @@ ERROS=0
 for REPO in $REPOS; do
     echo ""
     echo "📦 Processando: $REPO"
-    
+
     # Obter branch padrão atual
     DEFAULT_BRANCH=$(curl -s -H "Authorization: token ${GH_TOKEN}" \
         "https://api.github.com/repos/${REPO}" | \
         jq -r '.default_branch')
-    
+
     echo "   Branch padrão atual: $DEFAULT_BRANCH"
-    
+
     # Se já é main, pular
     if [ "$DEFAULT_BRANCH" = "main" ]; then
         echo "   ✅ Já usa 'main', pulando..."
         continue
     fi
-    
+
     # Verificar se main existe
     MAIN_EXISTS=$(curl -s -H "Authorization: token ${GH_TOKEN}" \
         "https://api.github.com/repos/${REPO}/branches/main" | \
         jq -r '.name' 2>/dev/null || echo "")
-    
+
     if [ -z "$MAIN_EXISTS" ]; then
         echo "   ⚠️  Branch 'main' não existe neste repositório"
         echo "   ⚠️  Pulando (crie 'main' manualmente primeiro)"
         continue
     fi
-    
+
     # Mudar branch padrão para main
     echo "   🔄 Mudando default branch para 'main'..."
     RESPONSE=$(curl -s -w "\n%{http_code}" -X PATCH \
@@ -68,14 +68,14 @@ for REPO in $REPOS; do
         -H "Accept: application/vnd.github+json" \
         "https://api.github.com/repos/${REPO}" \
         -d "{\"default_branch\": \"main\"}")
-    
+
     HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
-    
+
     if [ "$HTTP_CODE" = "200" ]; then
         echo "   ✅ Default branch alterada para 'main'"
         CORRIGIDOS=$((CORRIGIDOS + 1))
         sleep 1
-        
+
         # Tentar deletar branches antigas (se existirem)
         for OLD_BRANCH in $BRANCHES_ANTIGAS; do
             if [ "$OLD_BRANCH" = "$DEFAULT_BRANCH" ]; then

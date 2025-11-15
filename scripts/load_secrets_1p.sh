@@ -76,6 +76,13 @@ POSTGRES_PASSWORD=$(get_secret "BNI Gestão - PostgreSQL ${ENV^}" "password" "")
 HF_TOKEN=$(get_secret "BNI Gestão - Hugging Face Token" "credential" "")
 HF_DATASET_NAME=$(get_secret "BNI Gestão - Hugging Face Token" "dataset" "senal88/bni-gestao-imobiliaria")
 
+# GitHub Token
+if [ "$ENV" = "macos" ]; then
+    GH_TOKEN=$(get_secret "GH_TOKEN" "token" "")
+else
+    GH_TOKEN=$(get_secret "GitHub Personal Access Token" "token" "")
+fi
+
 # Paths (diferentes para Mac e VPS)
 if [ "$ENV" = "macos" ]; then
     DATA_RAW_PATH="./data/raw"
@@ -122,6 +129,9 @@ HF_TOKEN=${HF_TOKEN}
 HF_DATASET_NAME=${HF_DATASET_NAME}
 HF_DATASET_REVISION=main
 
+# GitHub
+GH_TOKEN=${GH_TOKEN}
+
 # API Configuration
 API_HOST=0.0.0.0
 API_PORT=8000
@@ -158,5 +168,10 @@ echo "   PostgreSQL: ${POSTGRES_USER}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGR
 echo "   Hugging Face: ${HF_DATASET_NAME}"
 if [ -z "$HF_TOKEN" ]; then
     echo -e "${YELLOW}   ⚠️  HF_TOKEN não encontrado - configure manualmente se necessário${NC}"
+fi
+if [ -n "$GH_TOKEN" ]; then
+    echo "   GitHub: ✅ Token configurado"
+else
+    echo -e "${YELLOW}   ⚠️  GH_TOKEN não encontrado - configure manualmente se necessário${NC}"
 fi
 
