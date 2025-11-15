@@ -12,10 +12,16 @@ on:
 env:
   PYTHON_VERSION: '3.11'
 
+# Set default permissions to read-only for security
+permissions:
+  contents: read
+
 jobs:
   validate:
     name: Validate Data
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     
     steps:
       - name: Checkout code
@@ -52,6 +58,8 @@ jobs:
     needs: validate
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
     
     steps:
       - name: Checkout code
@@ -84,6 +92,8 @@ jobs:
     needs: validate
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
     
     steps:
       - name: Checkout code
@@ -201,6 +211,9 @@ jobs:
     needs: validate
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      actions: write  # Required for uploading artifacts
     
     steps:
       - name: Checkout code
@@ -238,6 +251,9 @@ jobs:
     needs: validate
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      actions: write  # Required for uploading artifacts
     
     steps:
       - name: Checkout code
