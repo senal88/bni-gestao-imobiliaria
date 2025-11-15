@@ -42,9 +42,12 @@ Esta pasta contém templates e exemplos para desenvolvimento. **Todos os exemplo
 
 ### Frontend
 
-- **`prompt_diagnostico_frontend.md`** - Prompt para diagnóstico de frontend
-- **`frontend-project-context.md`** - Contexto de projeto frontend
-- **`generate-frontend-repo.sh`** - Script para gerar repositório frontend
+- **`frontend-project-context-bni.md`** - Contexto completo do projeto frontend BNI (⭐ USE ESTE)
+- **`setup-frontend.sh`** - Script automatizado de setup do frontend (macOS/Ubuntu)
+- **`README_FRONTEND.md`** - Documentação completa do frontend
+- **`frontend-project-context.md`** - Template genérico de contexto frontend (referência)
+- **`generate-frontend-repo.sh`** - Gerador genérico de repositório frontend (referência)
+- **`prompt_diagnostico_frontend.md`** - Diagnóstico de capacidades frontend
 
 ## 🔄 Dados Oficiais
 
@@ -106,9 +109,10 @@ data/raw/propriedades.csv
 
 ### Para Frontend
 
-1. Use `generate-frontend-repo.sh` para criar estrutura
-2. Consulte `frontend-project-context.md` para configuração
-3. Use dados reais do CSV para mockups e testes
+1. **Setup inicial**: Execute `./setup-frontend.sh` para criar o projeto completo
+2. **Documentação**: Consulte `README_FRONTEND.md` para guia completo
+3. **Contexto**: Leia `frontend-project-context-bni.md` para especificações técnicas
+4. **Dados**: Use dados reais do CSV para desenvolvimento e testes
 
 ## ⚠️ Avisos
 
@@ -141,4 +145,10 @@ EOF
 - Schema oficial: `scripts/init.sql`
 - Dados oficiais: `data/raw/propriedades.csv`
 - Script de importação: `scripts/import_propriedades.py`
+- Índice completo: `INDEX_TEMPLATES.md`
+
+## 📚 Documentação Adicional
+
+- **Índice completo**: [`INDEX_TEMPLATES.md`](INDEX_TEMPLATES.md) - Navegação rápida de todos os templates
+- **Frontend**: [`README_FRONTEND.md`](README_FRONTEND.md) - Documentação completa do frontend
 
