@@ -1,0 +1,82 @@
+{
+  "exemplos": [
+    {
+      "codigo_cc": "51001",
+      "nome": "APTO 802 EDF.EMILIO BUMACHAR",
+      "tipo_estoque": "Concluídos",
+      "status": "Concluído",
+      "valor_2024": "44886.16"
+    },
+    {
+      "codigo_cc": "51002",
+      "nome": "APTO 902 EDF.EMILIO BUMACHAR",
+      "tipo_estoque": "Concluídos",
+      "status": "Concluído",
+      "valor_2024": "56226.27"
+    },
+    {
+      "codigo_cc": "51003",
+      "nome": "APTO 1401 EDF.EMILIO BUMACHAR",
+      "tipo_estoque": "Concluídos",
+      "status": "Concluído",
+      "valor_2024": "97338.01"
+    },
+    {
+      "codigo_cc": "51004",
+      "nome": "APTO 1402 EDF.EMILIO BUMACHAR",
+      "tipo_estoque": "Concluídos",
+      "status": "Locado",
+      "valor_2024": "81608.55"
+    },
+    {
+      "codigo_cc": "51005",
+      "nome": "APTO 1801 EDF.EMILIO BUMACHAR",
+      "tipo_estoque": "Concluídos",
+      "status": "Locado",
+      "valor_2024": "107507.39"
+    },
+    {
+      "codigo_cc": "51006",
+      "nome": "APTO 1002 EDF.EMILIO BUMACHAR",
+      "tipo_estoque": "Concluídos",
+      "status": "Concluído",
+      "valor_2024": "N/A"
+    },
+    {
+      "codigo_cc": "51007",
+      "nome": "TERRENO 07 QD 26 ENSEADA AZUL",
+      "tipo_estoque": "Concluídos",
+      "status": "Concluído",
+      "valor_2024": "23595.06"
+    },
+    {
+      "codigo_cc": "51008",
+      "nome": "TERRENO 2.250M² C.ITAPEMIRIM",
+      "tipo_estoque": "Concluídos",
+      "status": "Concluído",
+      "valor_2024": "9000.00"
+    },
+    {
+      "codigo_cc": "51009",
+      "nome": "APTO 134 EDF.PENSYLVANIA SJC",
+      "tipo_estoque": "Concluídos",
+      "status": "Concluído",
+      "valor_2024": "375428.68"
+    },
+    {
+      "codigo_cc": "51010",
+      "nome": "LT.5-6-7 QD.6A PRAIA DA COSTA (DROGASIL)",
+      "tipo_estoque": "Concluídos",
+      "status": "Locado",
+      "valor_2024": "176269.08"
+    }
+  ],
+  "tipos_estoque": [
+    "Concluídos"
+  ],
+  "status": [
+    "Concluído",
+    "Locado"
+  ],
+  "total_propriedades": 38
+}
