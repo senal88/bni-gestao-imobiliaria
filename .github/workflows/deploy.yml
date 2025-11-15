@@ -1,0 +1,271 @@
+name: Deploy to VPS PostgreSQL
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'data/**'
+      - 'src/**'
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  validate:
+    name: Validate Data
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Validate CSV Schema
+        run: |
+          if [ -f "data/raw/properties.csv" ]; then
+            python src/validators/csv_validator.py data/raw/properties.csv
+          else
+            echo "No properties.csv found, skipping validation"
+          fi
+      
+      - name: Run tests
+        run: |
+          if [ -d "tests" ] && [ "$(ls -A tests/*.py 2>/dev/null)" ]; then
+            pytest tests/ -v
+          else
+            echo "No tests found, skipping"
+          fi
+
+  sync-huggingface:
+    name: Sync to Hugging Face
+    needs: validate
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Sync to Hugging Face Dataset
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_DATASET_NAME: ${{ secrets.HF_DATASET_NAME }}
+        run: |
+          if [ -f "data/raw/properties.csv" ] && [ -n "$HF_TOKEN" ]; then
+            python src/sync/hf_sync.py data/raw/properties.csv $HF_DATASET_NAME
+            echo "Successfully synced to Hugging Face"
+          else
+            echo "Skipping Hugging Face sync (no data or token)"
+          fi
+
+  deploy-database:
+    name: Deploy to PostgreSQL VPS
+    needs: validate
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+      
+      - name: Create deployment package
+        run: |
+          mkdir -p deploy
+          cp -r src data requirements.txt deploy/
+          tar -czf deploy.tar.gz deploy/
+      
+      - name: Deploy to VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          # Setup SSH
+          mkdir -p ~/.ssh
+          echo "$VPS_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          
+          # Add VPS to known hosts
+          ssh-keyscan -H $VPS_HOST >> ~/.ssh/known_hosts
+          
+          # Upload deployment package
+          scp -i ~/.ssh/deploy_key deploy.tar.gz $VPS_USER@$VPS_HOST:/tmp/
+          
+          # Deploy on VPS
+          ssh -i ~/.ssh/deploy_key $VPS_USER@$VPS_HOST << 'ENDSSH'
+            cd /opt/bni-gestao-imobiliaria || mkdir -p /opt/bni-gestao-imobiliaria && cd /opt/bni-gestao-imobiliaria
+            
+            # Extract deployment
+            tar -xzf /tmp/deploy.tar.gz
+            mv deploy/* .
+            rmdir deploy
+            
+            # Setup virtual environment
+            python3 -m venv venv
+            source venv/bin/activate
+            pip install -r requirements.txt
+            
+            # Restart API service if exists
+            if systemctl is-active --quiet bni-api; then
+              sudo systemctl restart bni-api
+            fi
+            
+            echo "Deployment completed successfully"
+          ENDSSH
+      
+      - name: Load data to PostgreSQL
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          if [ -f "data/raw/properties.csv" ]; then
+            # Create table if not exists
+            PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME << EOF
+            CREATE TABLE IF NOT EXISTS properties (
+              id_propriedade VARCHAR(10) PRIMARY KEY,
+              nome VARCHAR(255) NOT NULL,
+              tipo VARCHAR(50) NOT NULL,
+              endereco TEXT NOT NULL,
+              cidade VARCHAR(100) NOT NULL,
+              estado VARCHAR(2) NOT NULL,
+              cep VARCHAR(10) NOT NULL,
+              area_m2 DECIMAL(10, 2) NOT NULL,
+              valor_aquisicao DECIMAL(15, 2) NOT NULL,
+              data_aquisicao DATE NOT NULL,
+              valor_atual DECIMAL(15, 2) NOT NULL,
+              renda_mensal DECIMAL(10, 2) DEFAULT 0,
+              inquilino VARCHAR(255) DEFAULT '',
+              status VARCHAR(50) NOT NULL,
+              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            
+            CREATE INDEX IF NOT EXISTS idx_properties_tipo ON properties(tipo);
+            CREATE INDEX IF NOT EXISTS idx_properties_status ON properties(status);
+            CREATE INDEX IF NOT EXISTS idx_properties_estado ON properties(estado);
+            EOF
+            
+            # Import CSV data
+            PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "\COPY properties FROM 'data/raw/properties.csv' WITH (FORMAT csv, HEADER true, DELIMITER ',');"
+            
+            echo "Data loaded to PostgreSQL successfully"
+          else
+            echo "No CSV file found, skipping database load"
+          fi
+
+  generate-reports:
+    name: Generate IFRS Reports
+    needs: validate
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Generate IFRS Reports
+        run: |
+          if [ -f "data/raw/properties.csv" ]; then
+            mkdir -p reports
+            python src/reports/ifrs_reports.py data/raw/properties.csv both
+            echo "IFRS reports generated successfully"
+          else
+            echo "No CSV file found, skipping report generation"
+          fi
+      
+      - name: Upload Reports as Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ifrs-reports
+          path: reports/
+          retention-days: 30
+
+  generate-obsidian:
+    name: Generate Obsidian Notes
+    needs: validate
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Generate Obsidian Notes
+        run: |
+          if [ -f "data/raw/properties.csv" ]; then
+            mkdir -p obsidian_vault
+            python src/sync/obsidian_generator.py data/raw/properties.csv obsidian_vault
+            echo "Obsidian notes generated successfully"
+          else
+            echo "No CSV file found, skipping Obsidian generation"
+          fi
+      
+      - name: Upload Obsidian Vault as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: obsidian-vault
+          path: obsidian_vault/
+          retention-days: 30

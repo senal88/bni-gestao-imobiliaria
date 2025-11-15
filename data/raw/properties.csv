@@ -1,0 +1,6 @@
+id_propriedade,nome,tipo,endereco,cidade,estado,cep,area_m2,valor_aquisicao,data_aquisicao,valor_atual,renda_mensal,inquilino,status
+PROP001,Edifício Central,Comercial,Rua das Flores 123,São Paulo,SP,01234-567,250.50,500000.00,2020-01-15,650000.00,5000.00,Empresa XYZ Ltda,Ocupada
+PROP002,Residencial Jardins,Residencial,Av. Paulista 1000,São Paulo,SP,01310-100,180.00,800000.00,2019-06-20,1200000.00,8000.00,João Silva,Ocupada
+PROP003,Galpão Industrial Norte,Industrial,Rua Industrial 450,Guarulhos,SP,07000-000,1500.00,2000000.00,2018-03-10,2800000.00,15000.00,Indústrias ABC,Ocupada
+PROP004,Terreno Centro,Terreno,Rua Central 789,Campinas,SP,13010-111,500.00,300000.00,2021-08-05,450000.00,0.00,,Vaga
+PROP005,Loja Shopping,Comercial,Shopping Center Piso 2,São Paulo,SP,04567-890,85.00,350000.00,2020-11-01,420000.00,4200.00,Boutique Fashion,Ocupada

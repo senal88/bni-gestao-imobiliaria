@@ -205,3 +205,9 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Generated artifacts - should be regenerated
+obsidian_vault/
+reports/
+*.pdf
+*.xlsx
