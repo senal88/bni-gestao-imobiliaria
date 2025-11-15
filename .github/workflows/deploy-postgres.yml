@@ -5,7 +5,6 @@ on:
     branches:
       - main
       - master
-      - teab
     paths:
       - 'scripts/**'
       - 'data/schemas/**'
@@ -65,7 +64,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key -p $SSH_PORT $SSH_USER@$SSH_HOST << 'EOF'
             cd /opt/bni-gestao-imobiliaria || exit 1
-            git pull origin teab
+            git pull origin main
             python3 -m pip install -r requirements.txt --quiet
             python3 scripts/init_database.py
             echo "Deploy concluído com sucesso!"

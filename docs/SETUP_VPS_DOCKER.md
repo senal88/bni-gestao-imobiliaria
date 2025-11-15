@@ -284,7 +284,7 @@ docker-compose -f docker-compose.prod.yml logs --tail=100
 
 ```bash
 cd /opt/bni-gestao-imobiliaria
-git pull origin teab
+git pull origin main
 
 # Se houver mudanças no schema
 source venv/bin/activate

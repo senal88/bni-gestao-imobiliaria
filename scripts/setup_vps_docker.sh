@@ -58,7 +58,7 @@ echo -e "${BLUE}3. Clonando/Atualizando repositório...${NC}"
 if [ -d "$DEPLOY_DIR/.git" ]; then
     echo "   Repositório já existe, atualizando..."
     cd "$DEPLOY_DIR"
-    git pull origin teab || echo "   Aviso: não foi possível atualizar"
+    git pull origin main || echo "   Aviso: não foi possível atualizar"
 else
     git clone https://github.com/senal88/bni-gestao-imobiliaria.git "$DEPLOY_DIR"
 fi

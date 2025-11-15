@@ -103,7 +103,7 @@ cd /opt/bni-gestao-imobiliaria
 git clone https://github.com/senal88/bni-gestao-imobiliaria.git .
 
 # Ou se já existe, atualizar
-git pull origin teab
+git pull origin main
 ```
 
 ## 🐘 Passo 6: Configurar PostgreSQL na VPS
@@ -343,7 +343,7 @@ free -h
 
 ```bash
 cd /opt/bni-gestao-imobiliaria
-git pull origin teab
+git pull origin main
 source venv/bin/activate
 pip install -r requirements.txt
 python scripts/init_database.py  # Se houver mudanças no schema
